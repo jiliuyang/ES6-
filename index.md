@@ -181,3 +181,93 @@ console.log(arr);       //[1,2]
 ### 13、array.sort([copareFunction])
 
 sort方法可以对数组按某一指定比较规则进行排序。如果不传参数则按照字符编码的顺序进行排序
+
+### 14、array.reduce(function(prev,cur,indedx,arr),initialValue)
+
+reduce() 方法接收一个函数作为累加器，数组中的每个值（从左到右）开始缩减，最终计算为一个值。一般来说空数组是不会进行回调的，用空数组执行reduce方法时会报错，但如果设置了初始值则可以避免，但一般也不推荐(因为没有意义)。
+
+initialValue是可自定义的初始值，如果设置了则以其作为初始值（此时起始所以为0），如果不设置则以数组的第一个元素作为初始值（此时起始索引为1）。如下面的2个累加计算示例可看出来
+```
+    const arr = [1,2,3,4]
+    const val = arr.reduce((prev,cur,index,arr) => {
+      console.log(index)  //依次为1,2,3
+      return prev + cur;
+    })
+    console.log(val)  //10
+```
+
+```
+    const arr = [1,2,3,4]
+    const val = arr.reduce((prev,cur,index,arr) => {
+      console.log(index)  //依次为0,1,2,3
+      return prev + cur;
+    })
+    console.log(val)  //10
+```
+
+reduce方法可以说是一个高级方法，因为他的可自定义的累加器函数，可以处理很多比较高级的操作，常见的有：
+
+#### 数组去重
+
+```
+let arr = [1,2,3,3,1,2]
+let newArr = arr.reduce((pre,cur)=>{
+    if(!pre.includes(cur)){
+      return pre.concat(cur)
+    }else{
+      return pre
+    }
+},[])
+console.log(newArr);// [1, 2, 3]
+```
+
+#### 计算数组中各元素出现的次数
+
+```
+let characters = ['a', 'b', 't', 't', 'a','f'];
+
+let arr = characters.reduce((pre,cur)=>{
+  if(cur in pre){
+    pre[cur]++
+  }else{
+    pre[cur] = 1 
+  }
+  return pre
+},{})
+console.log(arr); //{a: 2, b: 1, t: 2, f: 1}
+```
+
+#### 对象数组中的单个属性累加
+
+```
+const achievement = [
+  {year:'2016年',number: 231200},
+  {year:'2017年',number: 201900},
+  {year:'2018年',number: 275678},
+  {year:'2019年',number: 301200}
+];
+const sum = achievement.reduce((prev,cur) => {
+  return prev + cur.number
+},0)
+console.log(sum)  //1009978
+```
+
+#### 将二维数组转化为一维数组
+
+```
+let arr = [[0, 1], [2, 3], [4, 5]]
+let newArr = arr.reduce((pre,cur)=>{
+    return pre.concat(cur)
+},[])
+console.log(newArr); // [0, 1, 2, 3, 4, 5]
+```
+
+#### 将多维数组转化为一维数组
+
+```
+let arr = [[0, 1], [2, 3], [4,[5,6,7]]]
+const newArr = function(arr){
+   return arr.reduce((pre,cur)=>pre.concat(Array.isArray(cur)?newArr(cur):cur),[])
+}
+console.log(newArr(arr)); //[0, 1, 2, 3, 4, 5, 6, 7]
+```
